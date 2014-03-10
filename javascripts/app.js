@@ -25,7 +25,6 @@ SpaceInvader = Backbone.Model.extend({
 SpaceInvaderView = Backbone.View.extend({
 
     initialize: function () {
-        var self = this;
         this.render();
     },
 
@@ -35,13 +34,21 @@ SpaceInvaderView = Backbone.View.extend({
         var template = _.template($("#space_invader_view").html())
         this.$el.html(template);
         $("#space_invaders_container").append(this.$el);
+        var window_width = $(window).width();
+        var randomLeft = Math.floor( Math.random() * window_width )
+        this.$el.css({ "left": randomLeft})
+        this.attack();
     },
 
     attack: function () {
+        var self = this;
+        var randomTime = Math.floor( Math.random() * 3000);
         var window_height = $(window).height();
-        this.$el.animate({
-            "margin-top": window_height
-        })
+        this.$el.animate({ "top": window_height + 100 }, randomTime);
+
+        setInterval(function () {
+            // console.log(self.$el.position());
+        }, 50)
     }
 
 })
@@ -69,17 +76,17 @@ var game = {
         
 
         setInterval(function () {
-            var spaceinvader = new SpaceInvader();
-            var spaceinvaderview = new SpaceInvaderView({model: spaceinvader})
-            self.spaceinvaderscollection.add(spaceinvader); 
+            for (var i = 1; i <= 3; i++) {
+                var spaceinvader = new SpaceInvader();
+                var spaceinvaderview = new SpaceInvaderView({model: spaceinvader})
+                self.spaceinvaderscollection.add(spaceinvader); 
+            }
         }, 2000)
             
         
     }
 
 }
-
-
 
 
 $(function () {

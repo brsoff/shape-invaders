@@ -8,6 +8,18 @@ ShooterView = Backbone.View.extend({
         this.render();
     },
 
+    goLeft: function () {
+        this.$el.animate({
+            "left":"-=100px"
+        }, 100)
+    },
+
+    goRight: function () {
+        this.$el.animate({
+            "left":"+=100px"
+        }, 100)
+    },
+
     className: "shooter_div",
 
     render: function () {
@@ -62,19 +74,15 @@ SpaceInvadersCollection = Backbone.Collection.extend({
 })
 
 
-
 var game = {
 
     initialize: function () {
         var self = this;
-
+        self.inProgress = true;
         self.shooter = new Shooter();
         self.shooterview = new ShooterView();
-
-
         self.spaceinvaderscollection = new SpaceInvadersCollection();
         
-
         setInterval(function () {
             for (var i = 1; i <= 3; i++) {
                 var spaceinvader = new SpaceInvader();
@@ -82,13 +90,23 @@ var game = {
                 self.spaceinvaderscollection.add(spaceinvader); 
             }
         }, 2000)
-            
-        
     }
 
 }
 
 
 $(function () {
+    var window_width = window.innerWidth;
+    console.log(window_width)
+    $(".shooter_div").css({"margin-left": (window_width / 2)+"px"})
+
     game.initialize();
+
+        $(document).on("keyup", function (e) {
+            if (e.keyCode === 37) {
+                game.shooterview.goLeft();
+            }else if (e.keyCode === 39) {
+                game.shooterview.goRight();
+            }
+        })
 })

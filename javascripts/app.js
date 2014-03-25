@@ -5,7 +5,9 @@ Shooter = Backbone.Model.extend({
 ShooterView = Backbone.View.extend({
 
     initialize: function () {
+        var self = this;
         this.render();
+        this.detectCollision(self);
     },
 
     goLeft: function () {
@@ -18,6 +20,27 @@ ShooterView = Backbone.View.extend({
         this.$el.animate({
             "left":"+=100px"
         }, 100)
+    },
+
+    detectCollision: function (shooter) {
+        var self = this;
+        var shooter_width = shooter.$el.width();
+        var shooter_height = shooter.$el.height();
+        setInterval(function () {
+            var shooter_left = shooter.$el.offset().left;
+            var shooter_top = shooter.$el.offset().top;
+            game.spaceinvaderscollection.views.forEach(function (space_invader) {
+                var space_invader_left = space_invader.$el.offset().left
+                var space_invader_top = space_invader.$el.offset().top
+                if ((Math.abs(space_invader_left - shooter_left) <= shooter_width) && (space_invader_top >= shooter_top + 10 )) {
+                    console.log("COLLISION");
+                    self.$el.toggle("explode", {
+                        pieces: "36"
+                    }, 2000)
+                    // debugger
+                }
+            })
+        }, 60)
     },
 
     className: "shooter_div",
@@ -37,7 +60,9 @@ SpaceInvader = Backbone.Model.extend({
 SpaceInvaderView = Backbone.View.extend({
 
     initialize: function () {
+        var self = this;
         this.render();
+        game.spaceinvaderscollection.views.push(self);
     },
 
     className: "space_invader",
@@ -56,11 +81,12 @@ SpaceInvaderView = Backbone.View.extend({
         var self = this;
         var randomTime = Math.floor( Math.random() * 3000);
         var window_height = $(window).height();
-        this.$el.animate({ "top": window_height + 100 }, randomTime);
-
-        setInterval(function () {
-            // console.log(self.$el.position());
-        }, 50)
+        this.$el.animate({ "top": window_height + 100 }, randomTime, function () {
+            index = game.spaceinvaderscollection.views.indexOf(self);
+            game.spaceinvaderscollection.views.splice(index, 1);
+            self.remove();
+            self.model.destroy();
+        });
     }
 
 })
@@ -70,6 +96,7 @@ SpaceInvadersCollection = Backbone.Collection.extend({
     initialize: function () {
         this.on("add", console.log("added"))
         this.on("remove", this.destroy)
+        this.views = [];
     }
 })
 
@@ -82,6 +109,7 @@ var game = {
         self.shooter = new Shooter();
         self.shooterview = new ShooterView();
         self.spaceinvaderscollection = new SpaceInvadersCollection();
+        self.shooterMoveListen();
         
         setInterval(function () {
             for (var i = 1; i <= 3; i++) {
@@ -90,6 +118,16 @@ var game = {
                 self.spaceinvaderscollection.add(spaceinvader); 
             }
         }, 2000)
+    },
+
+    shooterMoveListen: function () {
+         $(document).on("keyup", function (e) {
+            if (e.keyCode === 37) {
+                game.shooterview.goLeft();
+            }else if (e.keyCode === 39) {
+                game.shooterview.goRight();
+            }
+        })
     }
 
 }
@@ -97,16 +135,6 @@ var game = {
 
 $(function () {
     var window_width = window.innerWidth;
-    console.log(window_width)
     $(".shooter_div").css({"margin-left": (window_width / 2)+"px"})
-
     game.initialize();
-
-        $(document).on("keyup", function (e) {
-            if (e.keyCode === 37) {
-                game.shooterview.goLeft();
-            }else if (e.keyCode === 39) {
-                game.shooterview.goRight();
-            }
-        })
 })

@@ -1,12 +1,18 @@
 /*INSERT CSS*/
 
+html, body {
+  height: 100%;
+}
+
 body {
   background: #000;
   position: relative;
-    overflow: hidden;
+  overflow: hidden;
+  margin: 0;
 }
 
 #container {
+  height: 100%;
 }
 
 .shooter_div {

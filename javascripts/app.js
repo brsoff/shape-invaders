@@ -26,21 +26,37 @@ ShooterView = Backbone.View.extend({
         var self = this;
         var shooter_width = shooter.$el.width();
         var shooter_height = shooter.$el.height();
-        setInterval(function () {
+        self.collisionInterval = setInterval(function () {
             var shooter_left = shooter.$el.offset().left;
             var shooter_top = shooter.$el.offset().top;
-            game.spaceinvaderscollection.views.forEach(function (space_invader) {
-                var space_invader_left = space_invader.$el.offset().left
-                var space_invader_top = space_invader.$el.offset().top
-                if ((Math.abs(space_invader_left - shooter_left) <= shooter_width) && (space_invader_top >= shooter_top + 10 )) {
-                    console.log("COLLISION");
-                    self.$el.toggle("explode", {
-                        pieces: "36"
-                    }, 2000)
-                    // debugger
-                }
+
+                game.spaceinvaderscollection.views.forEach(function (space_invader) {
+
+                    if (game.inProgress === false) {
+                        return false;
+                    }else{
+
+                        var space_invader_left = space_invader.$el.offset().left
+                        var space_invader_top = space_invader.$el.offset().top
+
+                        if ((Math.abs(space_invader_left - shooter_left) <= shooter_width) && (space_invader_top >= shooter_top)) {
+                            game.inProgress = false;
+                            game.shooterview.gameOver();
+                            return false;
+                        }
+
+                    }
+
             })
         }, 60)
+    },
+
+    gameOver: function () {
+        console.log("running this function")
+        game.shooterview.$el.hide("explode", { pieces: "36" }, 500, function () {
+                            clearInterval(self.collisionInterval);
+                            clearInterval(game.startGame);
+                        })
     },
 
     className: "shooter_div",
@@ -110,14 +126,16 @@ var game = {
         self.shooterview = new ShooterView();
         self.spaceinvaderscollection = new SpaceInvadersCollection();
         self.shooterMoveListen();
+
+        self.startGame = setInterval(function () {
+                            for (var i = 1; i <= 3; i++) {
+                                var spaceinvader = new SpaceInvader();
+                                var spaceinvaderview = new SpaceInvaderView({model: spaceinvader})
+                                self.spaceinvaderscollection.add(spaceinvader); 
+                            }
+                        }, 1000)
         
-        setInterval(function () {
-            for (var i = 1; i <= 3; i++) {
-                var spaceinvader = new SpaceInvader();
-                var spaceinvaderview = new SpaceInvaderView({model: spaceinvader})
-                self.spaceinvaderscollection.add(spaceinvader); 
-            }
-        }, 2000)
+        
     },
 
     shooterMoveListen: function () {

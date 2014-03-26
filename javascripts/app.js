@@ -40,31 +40,37 @@ ShooterView = Backbone.View.extend({
             var shooter_left = shooter.$el.offset().left;
             var shooter_top = shooter.$el.offset().top;
 
-            game.spaceinvaderscollection.views.forEach(function (space_invader) {
+            game.shapeinvaderscollection.views.forEach(function (shape_invader) {
 
                 if (game.inProgress === false) {
                     return false;
                 } else {
 
-                    var space_invader_left = space_invader.$el.offset().left
-                    var space_invader_top = space_invader.$el.offset().top
+                    var shape_invader_left = shape_invader.$el.offset().left
+                    var shape_invader_top = shape_invader.$el.offset().top
 
-                    if ((Math.abs(space_invader_left - shooter_left) <= shooter_width) && (space_invader_top >= shooter_top)) {
+                    if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_top >= shooter_top)) {
                         
-                        if (space_invader.trump === true) {
-                            game.spaceinvaderscollection.views.forEach(function (invader) {
+                        if (shape_invader.trump === true) {
+                            game.shapeinvaderscollection.views.forEach(function (invader) {
                                 invader.$el.hide().remove();
                             })
                             return false;
-                        }else if (space_invader.health === false) {
+                        }else if (shape_invader.health === false) {
                             game.inProgress = false;
                             game.shooterview.gameOver();
                             return false;
                         } else {
-                            var current_width = game.shooterview.$el.width()
+                            var current_width = game.shooterview.$el.width();
                             game.shooterview.$el.css({
                                 "width": (current_width / 2) + "px",
-                            })
+                                "background":"#00B545"
+                            });
+                            setTimeout(function () {
+                                self.$el.css({
+                                    "background":"#2e2e2e"
+                                })
+                            }, 60)
                         }
 
                     }
@@ -82,7 +88,8 @@ ShooterView = Backbone.View.extend({
         }, 500, function () {
             clearInterval(self.collisionInterval);
             clearInterval(game.startGame);
-            clearInterval(game.growInterval)
+            clearInterval(game.growInterval);
+            $("#intro").show();
         })
     },
 
@@ -96,42 +103,44 @@ ShooterView = Backbone.View.extend({
 
 })
 
-SpaceInvader = Backbone.Model.extend({
+ShapeInvader = Backbone.Model.extend({
 
 })
 
-SpaceInvaderView = Backbone.View.extend({
+ShapeInvaderView = Backbone.View.extend({
 
     initialize: function () {
         var self = this;
         this.health = false;
         this.render();
-        game.spaceinvaderscollection.views.push(self);
+        game.shapeinvaderscollection.views.push(self);
 
     },
 
-    className: "space_invader",
+    className: "shape_invader",
 
     render: function () {
         var self = this;
-        var template = _.template($("#space_invader_view").html())
+        var template = _.template($("#shape_invader_view").html())
         this.$el.html(template);
-        $("#space_invaders_container").append(this.$el);
+        $("#shape_invaders_container").append(this.$el);
         var window_width = $(window).width();
         var randomLeft = Math.floor(Math.random() * window_width)
         this.$el.css({
             "left": randomLeft
         })
 
-        var dumb_array = [0, 0, 0, 0, 0, 1, 1, 2];
+        var dumb_array = [0, 0, 0, 0, 1, 1, 1, 2];
         var num = _.shuffle(dumb_array)[0]
 
         if (num === 1) {
             self.$el.css({ "background": "#00B545" })
             self.health = true;
         }else if (num === 2) {
-            self.$el.css({ "background": "#00A08E", "width":"25px", "height":"25px", "border-radius":"50%" }) 
+            self.$el.css({ "background": "#00A08E", "width":"20px", "height":"20px", "border-radius":"50%" }) 
             self.trump = true;
+        }else{
+            self.$el.addClass("arrow-down");
         }
 
         this.attack();
@@ -146,8 +155,8 @@ SpaceInvaderView = Backbone.View.extend({
         this.$el.animate({
             "top": window_height + 100
         }, randomTime, function () {
-            index = game.spaceinvaderscollection.views.indexOf(self);
-            game.spaceinvaderscollection.views.splice(index, 1);
+            index = game.shapeinvaderscollection.views.indexOf(self);
+            game.shapeinvaderscollection.views.splice(index, 1);
             self.remove();
             self.model.destroy();
         });
@@ -155,7 +164,7 @@ SpaceInvaderView = Backbone.View.extend({
 
 })
 
-SpaceInvadersCollection = Backbone.Collection.extend({
+ShapeInvadersCollection = Backbone.Collection.extend({
 
     initialize: function () {
         this.on("add", console.log("added"))
@@ -169,21 +178,23 @@ var game = {
 
     initialize: function () {
         var self = this;
+        var window_width = window.innerWidth;
+        $(".shooter_div").css({ "margin-left": (window_width / 2) + "px" })
         self.inProgress = true;
         self.shooter = new Shooter();
         self.shooterview = new ShooterView();
-        self.spaceinvaderscollection = new SpaceInvadersCollection();
+        self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.time = 0;
 
         self.shooterListen();
 
         self.startGame = setInterval(function () {
             for (var i = 1; i <= ( self.time / 2 ); i++) {
-                var spaceinvader = new SpaceInvader();
-                var spaceinvaderview = new SpaceInvaderView({
-                    model: spaceinvader
+                var shapeinvader = new ShapeInvader();
+                var shapeinvaderview = new ShapeInvaderView({
+                    model: shapeinvader
                 })
-                self.spaceinvaderscollection.add(spaceinvader);
+                self.shapeinvaderscollection.add(shapeinvader);
             }
             $("#time").text(self.time += 1);
         }, 1000)
@@ -206,7 +217,8 @@ var game = {
 
 
 $(function () {
-    var window_width = window.innerWidth;
-    $(".shooter_div").css({ "margin-left": (window_width / 2) + "px" })
-    game.initialize();
+    $("#play").on("click", function () {
+        $("#intro").hide();
+        game.initialize();
+    })
 })

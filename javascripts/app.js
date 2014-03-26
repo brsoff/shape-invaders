@@ -127,10 +127,10 @@ SpaceInvaderView = Backbone.View.extend({
         var num = _.shuffle(dumb_array)[0]
 
         if (num === 1) {
-            self.$el.css({ "background": "#FF9300" })
+            self.$el.css({ "background": "#00B545" })
             self.health = true;
         }else if (num === 2) {
-            self.$el.css({ "background": "#00E0E9" }) 
+            self.$el.css({ "background": "#00A08E", "width":"25px", "height":"25px", "border-radius":"50%" }) 
             self.trump = true;
         }
 
@@ -178,7 +178,7 @@ var game = {
         self.shooterListen();
 
         self.startGame = setInterval(function () {
-            for (var i = 1; i <= self.time; i++) {
+            for (var i = 1; i <= ( self.time / 2 ); i++) {
                 var spaceinvader = new SpaceInvader();
                 var spaceinvaderview = new SpaceInvaderView({
                     model: spaceinvader

@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background: #ecf0f1;
+  background: #fff;
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -30,6 +30,8 @@ body {
   width: 10px;
   height: 20px;
   background-color: #292929;
+  border-top-right-radius: 50%;
+  border-top-left-radius: 50%;
   position: absolute;
   bottom: 0;
 }
@@ -44,8 +46,16 @@ body {
 .space_invader {
   width: 35px;
   height: 35px;
-  background-color: #FF0053;
+  background-color: #F40603;
   position: absolute;
+}
+
+.arrow-down {
+  width: 0 !important; 
+  height: 0 !important; 
+  border-left: 20px solid transparent !important;
+  border-right: 20px solid transparent !important;
+  border-top: 20px solid #F40603 !important;
 }
 
 #space_invaders_container {

@@ -17,19 +17,19 @@ ShooterView = Backbone.View.extend({
             self.$el.css({
                 "width": "+=1"
             })
-        }, 60)
+        }, 160)
     },
 
     goLeft: function () {
         this.$el.animate({
-            "left": "-=100px"
-        }, 100)
+            "left": "-=30px"
+        }, 10)
     },
 
     goRight: function () {
         this.$el.animate({
-            "left": "+=100px"
-        }, 100)
+            "left": "+=30px"
+        }, 10)
     },
 
     detectCollision: function (shooter) {
@@ -50,14 +50,20 @@ ShooterView = Backbone.View.extend({
                     var space_invader_top = space_invader.$el.offset().top
 
                     if ((Math.abs(space_invader_left - shooter_left) <= shooter_width) && (space_invader_top >= shooter_top)) {
-                        if (space_invader.health === false) {
+                        
+                        if (space_invader.trump === true) {
+                            game.spaceinvaderscollection.views.forEach(function (invader) {
+                                invader.$el.hide().remove();
+                            })
+                            return false;
+                        }else if (space_invader.health === false) {
                             game.inProgress = false;
                             game.shooterview.gameOver();
                             return false;
                         } else {
                             var current_width = game.shooterview.$el.width()
                             game.shooterview.$el.css({
-                                "width": (current_width / 2) + "px"
+                                "width": (current_width / 2) + "px",
                             })
                         }
 
@@ -117,14 +123,15 @@ SpaceInvaderView = Backbone.View.extend({
             "left": randomLeft
         })
 
-        var dumb_array = [0, 0, 0, 0, 0, 0, 0, 1];
+        var dumb_array = [0, 0, 0, 0, 0, 1, 1, 2];
         var num = _.shuffle(dumb_array)[0]
 
         if (num === 1) {
-            self.$el.css({
-                "background": "orange"
-            })
+            self.$el.css({ "background": "#FF9300" })
             self.health = true;
+        }else if (num === 2) {
+            self.$el.css({ "background": "#00E0E9" }) 
+            self.trump = true;
         }
 
         this.attack();
@@ -134,7 +141,7 @@ SpaceInvaderView = Backbone.View.extend({
         var self = this;
         var arr = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         var randomNum = _.shuffle(arr)[0];
-        var randomTime = Math.floor(randomNum * 2500);
+        var randomTime = Math.floor(randomNum * 3500);
         var window_height = $(window).height();
         this.$el.animate({
             "top": window_height + 100
@@ -166,23 +173,27 @@ var game = {
         self.shooter = new Shooter();
         self.shooterview = new ShooterView();
         self.spaceinvaderscollection = new SpaceInvadersCollection();
-        self.shooterMoveListen();
+        self.time = 0;
+
+        self.shooterListen();
 
         self.startGame = setInterval(function () {
-            for (var i = 1; i <= 5; i++) {
+            for (var i = 1; i <= self.time; i++) {
                 var spaceinvader = new SpaceInvader();
                 var spaceinvaderview = new SpaceInvaderView({
                     model: spaceinvader
                 })
                 self.spaceinvaderscollection.add(spaceinvader);
             }
+            $("#time").text(self.time += 1);
         }, 1000)
 
 
     },
 
-    shooterMoveListen: function () {
-        $(document).on("keyup", function (e) {
+    shooterListen: function () {
+        $(document).on("keydown", function (e) {
+            // need to put in validation so that shooter stays on page.
             if (e.keyCode === 37) {
                 game.shooterview.goLeft();
             } else if (e.keyCode === 39) {
@@ -196,8 +207,6 @@ var game = {
 
 $(function () {
     var window_width = window.innerWidth;
-    $(".shooter_div").css({
-        "margin-left": (window_width / 2) + "px"
-    })
+    $(".shooter_div").css({ "margin-left": (window_width / 2) + "px" })
     game.initialize();
 })

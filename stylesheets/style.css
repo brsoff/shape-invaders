@@ -5,20 +5,31 @@ html, body {
 }
 
 body {
-  background: #000;
+  background: #ecf0f1;
   position: relative;
   overflow: hidden;
   margin: 0;
+  font-family: 'Helvetica';
 }
 
 #container {
   height: 100%;
 }
 
+#time {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 32px;
+  color: #000;
+  padding:5px;
+  font-weight: bold;
+}
+
 .shooter_div {
   width: 10px;
   height: 20px;
-  background-color: #fff;
+  background-color: #292929;
   position: absolute;
   bottom: 0;
 }
@@ -31,9 +42,9 @@ body {
 }
 
 .space_invader {
-  width: 50px;
-  height: 50px;
-  background-color: lime;
+  width: 35px;
+  height: 35px;
+  background-color: #FF0053;
   position: absolute;
 }
 

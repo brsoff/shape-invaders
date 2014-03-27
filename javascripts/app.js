@@ -59,7 +59,7 @@ ShooterView = Backbone.View.extend({
                             });
                             setTimeout(function () {
                                 self.$el.css({
-                                    "background": "#292C44"
+                                    "background": "#FF5F0D"
                                 })
                             }, 60)
                         }
@@ -79,6 +79,7 @@ ShooterView = Backbone.View.extend({
             clearInterval(game.shooterview.growInterval);
             clearInterval(game.startGame);
             $intro.show();
+            $container.animate({"height":"95%"});
         })
     },
 
@@ -148,7 +149,7 @@ ShapeInvaderView = Backbone.View.extend({
         var arr = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         var randomNum = _.shuffle(arr)[0];
         var randomTime = Math.floor(randomNum * 3000);
-        var window_height = $(window).height();
+        var window_height = $container.height();
         self.$el.animate({
             "top": window_height + 100
         }, randomTime, function () {
@@ -169,7 +170,6 @@ ShapeInvadersCollection = Backbone.Collection.extend({
     }
 })
 
-
 var game = {
 
     initialize: function () {
@@ -178,6 +178,7 @@ var game = {
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.time = 0;
+        self.container_height = $container.height();
 
         self.startGame = setInterval(function () {
             for (var i = 1; i <= (self.time / 2); i++) {
@@ -188,6 +189,9 @@ var game = {
                 self.shapeinvaderscollection.add(shapeinvader);
             }
             $time.text(self.time += 1);
+            self.container_height -= 5;
+            $container.css({"height": self.container_height+"px"});
+
         }, 1000)
 
     }
@@ -196,6 +200,7 @@ var game = {
 
 $(function () {
 
+    $container = $("#container");
     $intro = $("#intro");
     $time = $("#time");
     $shooter_div_container = $("#shooter_div_container");

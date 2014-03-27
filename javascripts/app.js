@@ -55,7 +55,7 @@ ShooterView = Backbone.View.extend({
                             var current_width = game.shooterview.$el.width();
                             game.shooterview.$el.css({
                                 "width": (current_width / 2) + "px",
-                                "background": "#18CDCA"
+                                "background": "#4F80E1"
                             });
                             setTimeout(function () {
                                 self.$el.css({
@@ -88,6 +88,10 @@ ShooterView = Backbone.View.extend({
         var template = _.template($shooter_view.html());
         this.$el.html(template);
         $shooter_div_container.html(this.$el);
+        var window_width = window.innerWidth;
+        this.$el.css({
+            "left": (window_width / 2) + "px"
+        })
     }
 
 })
@@ -170,10 +174,6 @@ var game = {
 
     initialize: function () {
         var self = this;
-        var window_width = window.innerWidth;
-        $shooter_div.css({
-            "margin-left": (window_width / 2) + "px"
-        })
         self.inProgress = true;
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();

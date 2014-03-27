@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background: #000;
+  background: #D8D8D8;
   position: relative;
   margin: 0;
   font-family: 'Helvetica';
@@ -13,7 +13,7 @@ body {
 }
 
 #container {
-  height: 95%;
+  height: 99%;
   width: 100%;
   background: #f7f7f7;
   position: relative;
@@ -49,6 +49,7 @@ body {
 
 .shape_invader {
   position: absolute;
+  opacity: .9;
 }
 
 .gentle-square {
@@ -106,7 +107,7 @@ table#instructions td div {
 .enter {
   padding: 2px 5px;
   border: 1px solid #ccc;
-  background: #f7f7f7;
+  background: #EFECEC;
   font-family: Courier;
   color: #2e2e2e;
   font-size: 16px;

@@ -23,6 +23,26 @@ ShooterView = Backbone.View.extend({
         }, 10)
     },
 
+    flash: function (color) {
+
+        if (color === "#4F80E1") {
+             var current_width = game.shooterview.$el.width();
+             game.shooterview.$el.css({
+            "width": (current_width / 2) + "px",
+            "background": color
+            })
+        }else{
+            game.shooterview.$el.css({
+               "background": color 
+            })
+        }
+        setTimeout(function () {
+        game.shooterview.$el.css({
+            "background": "#FF5F0D"
+        })
+    }, 60)
+    },
+
     detectCollision: function (shooter) {
         var self = this;
         self.collisionInterval = setInterval(function () {
@@ -43,25 +63,16 @@ ShooterView = Backbone.View.extend({
                     if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_top >= shooter_top)) {
 
                         if (shape_invader.model.attributes.divine === true) {
-                            game.shapeinvaderscollection.views.forEach(function (invader) {
-                                invader.$el.hide().remove();
-                            })
+                            game.shooterview.flash("#FFC600");
+                            game.clearBoard();
                             return false;
                         } else if (shape_invader.model.attributes.good === false) {
+                            game.shapeinvaderscollection.reset();
                             game.inProgress = false;
                             game.shooterview.gameOver();
                             return false;
                         } else {
-                            var current_width = game.shooterview.$el.width();
-                            game.shooterview.$el.css({
-                                "width": (current_width / 2) + "px",
-                                "background": "#4F80E1"
-                            });
-                            setTimeout(function () {
-                                self.$el.css({
-                                    "background": "#FF5F0D"
-                                })
-                            }, 60)
+                            game.shooterview.flash("#4F80E1");
                         }
 
                     }
@@ -75,11 +86,11 @@ ShooterView = Backbone.View.extend({
         game.shooterview.$el.hide("explode", {
             pieces: "36"
         }, 500, function () {
+            game.clearBoard();
             clearInterval(game.shooterview.collisionInterval);
             clearInterval(game.shooterview.growInterval);
             clearInterval(game.startGame);
             $intro.show();
-            $container.animate({"height":"95%"});
         })
     },
 
@@ -173,12 +184,12 @@ ShapeInvadersCollection = Backbone.Collection.extend({
 var game = {
 
     initialize: function () {
+        $container.animate({"height":"99%"});
         var self = this;
         self.inProgress = true;
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.time = 0;
-        self.container_height = $container.height();
 
         self.startGame = setInterval(function () {
             for (var i = 1; i <= (self.time / 2); i++) {
@@ -189,12 +200,21 @@ var game = {
                 self.shapeinvaderscollection.add(shapeinvader);
             }
             $time.text(self.time += 1);
-            self.container_height -= 5;
-            $container.css({"height": self.container_height+"px"});
+            var container_height = $container.height()
+            container_height -= 5;
+            $container.css({"height": container_height+"px"});
 
         }, 1000)
 
+    },
+
+    clearBoard: function () {
+        game.shapeinvaderscollection.views.forEach(function (invader) {
+            invader.$el.hide().remove();
+        })
     }
+
+    
 
 }
 

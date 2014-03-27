@@ -1,35 +1,18 @@
-Shooter = Backbone.Model.extend({
-
-})
-
 ShooterView = Backbone.View.extend({
 
     initialize: function () {
         var self = this;
         this.render();
         this.detectCollision(self);
-        this.growInterval = this.grow();
-    },
-
-    grow: function () {
-        var self = this;
-        setInterval(function () {
-            self.$el.css({
-                "width": "+=1"
-            })
-        }, 160)
+        this.grow = setInterval(function () { self.$el.css({ "width": "+=1" }) }, 160)
     },
 
     goLeft: function () {
-        this.$el.animate({
-            "left": "-=30px"
-        }, 10)
+        this.$el.animate({ "left": "-=30px" }, 10)
     },
 
     goRight: function () {
-        this.$el.animate({
-            "left": "+=30px"
-        }, 10)
+        this.$el.animate({ "left": "+=30px" }, 10)
     },
 
     detectCollision: function (shooter) {
@@ -86,9 +69,9 @@ ShooterView = Backbone.View.extend({
         game.shooterview.$el.hide("explode", {
             pieces: "36"
         }, 500, function () {
-            clearInterval(self.collisionInterval);
+            clearInterval(game.shooterview.collisionInterval);
+            clearInterval(game.shooterview.growInterval);
             clearInterval(game.startGame);
-            clearInterval(game.growInterval);
             $("#intro").show();
         })
     },
@@ -126,9 +109,7 @@ ShapeInvaderView = Backbone.View.extend({
         $("#shape_invaders_container").append(this.$el);
         var window_width = $(window).width();
         var randomLeft = Math.floor(Math.random() * window_width)
-        this.$el.css({
-            "left": randomLeft
-        })
+        this.$el.css({ "left": randomLeft });
 
         var dumb_array = [0, 0, 0, 0, 1, 1, 1, 2];
         var num = _.shuffle(dumb_array)[0]
@@ -142,7 +123,6 @@ ShapeInvaderView = Backbone.View.extend({
         }else{
             self.$el.addClass("arrow-down");
         }
-
         this.attack();
     },
 
@@ -167,7 +147,6 @@ ShapeInvaderView = Backbone.View.extend({
 ShapeInvadersCollection = Backbone.Collection.extend({
 
     initialize: function () {
-        this.on("add", console.log("added"))
         this.on("remove", this.destroy)
         this.views = [];
     }
@@ -181,12 +160,9 @@ var game = {
         var window_width = window.innerWidth;
         $(".shooter_div").css({ "margin-left": (window_width / 2) + "px" })
         self.inProgress = true;
-        self.shooter = new Shooter();
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.time = 0;
-
-        self.shooterListen();
 
         self.startGame = setInterval(function () {
             for (var i = 1; i <= ( self.time / 2 ); i++) {
@@ -199,18 +175,6 @@ var game = {
             $("#time").text(self.time += 1);
         }, 1000)
 
-
-    },
-
-    shooterListen: function () {
-        $(document).on("keydown", function (e) {
-            // need to put in validation so that shooter stays on page.
-            if (e.keyCode === 37) {
-                game.shooterview.goLeft();
-            } else if (e.keyCode === 39) {
-                game.shooterview.goRight();
-            }
-        })
     }
 
 }
@@ -221,4 +185,17 @@ $(function () {
         $("#intro").hide();
         game.initialize();
     })
+
+        $(document).on("keydown", function (e) {
+
+            if (game.inProgress) {
+                            // need to put in validation so that shooter stays on page.
+            if (e.keyCode === 37) {
+                game.shooterview.goLeft();
+            } else if (e.keyCode === 39) {
+                game.shooterview.goRight();
+            }
+            }
+        })
+
 })

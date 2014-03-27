@@ -11,7 +11,19 @@
 	<script src='javascripts/app.js'></script>
 </head>
 <body>
-<div id="intro">shape invaders - <button id="play">press to play</button></div>
+<div id="intro"><h1>shape invaders</h1>
+  <h3>use your &#8592; and &#8594; keys to avoid the evil red triangles.</h3>
+
+  <table id="instructions">
+    <tr>
+      <td><div class="gentle-square"></div><br>hit these guys to halve your size (that's good)</td>
+      <td><div class="evil-triangle"></div><br>these invaders kill you. stay away!</td>
+      <td><div class="divine-circle"></div><br>hit these circles to clear the screen of invaders</td>
+    </tr>
+  </table>
+
+  <p>press <span class="enter">enter</span> to play!</p>
+  </div>
 <div id="container">
   <div id="time"></div>
   <div id="shape_invaders_container"></div>

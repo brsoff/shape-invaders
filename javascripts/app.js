@@ -4,15 +4,23 @@ ShooterView = Backbone.View.extend({
         var self = this;
         this.render();
         this.detectCollision(self);
-        this.grow = setInterval(function () { self.$el.css({ "width": "+=1" }) }, 160)
+        this.grow = setInterval(function () {
+            self.$el.css({
+                "width": "+=1"
+            })
+        }, 160)
     },
 
     goLeft: function () {
-        this.$el.animate({ "left": "-=30px" }, 10)
+        this.$el.animate({
+            "left": "-=30px"
+        }, 10)
     },
 
     goRight: function () {
-        this.$el.animate({ "left": "+=30px" }, 10)
+        this.$el.animate({
+            "left": "+=30px"
+        }, 10)
     },
 
     detectCollision: function (shooter) {
@@ -33,13 +41,13 @@ ShooterView = Backbone.View.extend({
                     var shape_invader_top = shape_invader.$el.offset().top
 
                     if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_top >= shooter_top)) {
-                        
-                        if (shape_invader.trump === true) {
+
+                        if (shape_invader.model.attributes.divine === true) {
                             game.shapeinvaderscollection.views.forEach(function (invader) {
                                 invader.$el.hide().remove();
                             })
                             return false;
-                        }else if (shape_invader.health === false) {
+                        } else if (shape_invader.model.attributes.good === false) {
                             game.inProgress = false;
                             game.shooterview.gameOver();
                             return false;
@@ -47,17 +55,16 @@ ShooterView = Backbone.View.extend({
                             var current_width = game.shooterview.$el.width();
                             game.shooterview.$el.css({
                                 "width": (current_width / 2) + "px",
-                                "background":"#00B545"
+                                "background": "#18CDCA"
                             });
                             setTimeout(function () {
                                 self.$el.css({
-                                    "background":"#2e2e2e"
+                                    "background": "#292C44"
                                 })
                             }, 60)
                         }
 
                     }
-
                 }
 
             })
@@ -65,23 +72,22 @@ ShooterView = Backbone.View.extend({
     },
 
     gameOver: function () {
-        console.log("running this function")
         game.shooterview.$el.hide("explode", {
             pieces: "36"
         }, 500, function () {
             clearInterval(game.shooterview.collisionInterval);
             clearInterval(game.shooterview.growInterval);
             clearInterval(game.startGame);
-            $("#intro").show();
+            $intro.show();
         })
     },
 
     className: "shooter_div",
 
     render: function () {
-        var template = _.template($("#shooter_view").html());
+        var template = _.template($shooter_view.html());
         this.$el.html(template);
-        $("#shooter_div_container").html(this.$el);
+        $shooter_div_container.html(this.$el);
     }
 
 })
@@ -93,10 +99,8 @@ ShapeInvader = Backbone.Model.extend({
 ShapeInvaderView = Backbone.View.extend({
 
     initialize: function () {
-        var self = this;
-        this.health = false;
         this.render();
-        game.shapeinvaderscollection.views.push(self);
+        game.shapeinvaderscollection.views.push(this);
 
     },
 
@@ -104,35 +108,44 @@ ShapeInvaderView = Backbone.View.extend({
 
     render: function () {
         var self = this;
-        var template = _.template($("#shape_invader_view").html())
-        this.$el.html(template);
-        $("#shape_invaders_container").append(this.$el);
-        var window_width = $(window).width();
+        var template = _.template($shape_invader_view.html())
+        self.$el.html(template);
+        $shape_invaders_container.append(this.$el);
+        var window_width = window.innerWidth;
         var randomLeft = Math.floor(Math.random() * window_width)
-        this.$el.css({ "left": randomLeft });
+        self.$el.css({
+            "left": randomLeft
+        });
 
-        var dumb_array = [0, 0, 0, 0, 1, 1, 1, 2];
+        var dumb_array = [0, 0, 0, 0, 0, 1, 1, 1, 2];
         var num = _.shuffle(dumb_array)[0]
 
-        if (num === 1) {
-            self.$el.css({ "background": "#00B545" })
-            self.health = true;
-        }else if (num === 2) {
-            self.$el.css({ "background": "#00A08E", "width":"20px", "height":"20px", "border-radius":"50%" }) 
-            self.trump = true;
-        }else{
-            self.$el.addClass("arrow-down");
+        switch (num) {
+            case 0:
+                self.$el.addClass("evil-triangle");
+                self.model.attributes.good = false;
+                break;
+            case 1:
+                self.$el.addClass("gentle-square");
+                self.model.attributes.good = true;
+                break;
+            case 2:
+                self.$el.addClass("divine-circle");
+                self.model.attributes.divine = true;
+                break;
+            default:
+            console.log("??");
         }
-        this.attack();
+        self.attack();
     },
 
     attack: function () {
         var self = this;
         var arr = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
         var randomNum = _.shuffle(arr)[0];
-        var randomTime = Math.floor(randomNum * 3500);
+        var randomTime = Math.floor(randomNum * 3000);
         var window_height = $(window).height();
-        this.$el.animate({
+        self.$el.animate({
             "top": window_height + 100
         }, randomTime, function () {
             index = game.shapeinvaderscollection.views.indexOf(self);
@@ -158,44 +171,53 @@ var game = {
     initialize: function () {
         var self = this;
         var window_width = window.innerWidth;
-        $(".shooter_div").css({ "margin-left": (window_width / 2) + "px" })
+        $shooter_div.css({
+            "margin-left": (window_width / 2) + "px"
+        })
         self.inProgress = true;
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.time = 0;
 
         self.startGame = setInterval(function () {
-            for (var i = 1; i <= ( self.time / 2 ); i++) {
+            for (var i = 1; i <= (self.time / 2); i++) {
                 var shapeinvader = new ShapeInvader();
                 var shapeinvaderview = new ShapeInvaderView({
                     model: shapeinvader
                 })
                 self.shapeinvaderscollection.add(shapeinvader);
             }
-            $("#time").text(self.time += 1);
+            $time.text(self.time += 1);
         }, 1000)
 
     }
 
 }
 
-
 $(function () {
-    $("#play").on("click", function () {
-        $("#intro").hide();
-        game.initialize();
-    })
 
-        $(document).on("keydown", function (e) {
+    $intro = $("#intro");
+    $time = $("#time");
+    $shooter_div_container = $("#shooter_div_container");
+    $shooter_div = $(".shooter_div");
+    $shape_invaders_container = $("#shape_invaders_container");
+    $shape_invader_view = $("#shape_invader_view");
+    $shooter_view = $("#shooter_view");
 
-            if (game.inProgress) {
-                            // need to put in validation so that shooter stays on page.
+    $(document).on("keydown", function (e) {
+        if (game.inProgress) {
+            // need to put in validation so that shooter stays on page.
             if (e.keyCode === 37) {
                 game.shooterview.goLeft();
             } else if (e.keyCode === 39) {
                 game.shooterview.goRight();
             }
+        }else{
+            if (e.keyCode === 13) {
+                $intro.hide();
+                game.initialize();
             }
-        })
+        }
+    });
 
-})
+});

@@ -5,7 +5,7 @@ html, body {
 }
 
 body {
-  background: #fff;
+  background: #F0F0F1;
   position: relative;
   overflow: hidden;
   margin: 0;
@@ -30,7 +30,7 @@ body {
 .shooter_div {
   width: 10px;
   height: 20px;
-  background-color: #292929;
+  background-color: #292C44;
   border-top-right-radius: 50%;
   border-top-left-radius: 50%;
   position: absolute;
@@ -45,17 +45,28 @@ body {
 }
 
 .shape_invader {
-  width: 35px;
-  height: 35px;
   position: absolute;
 }
 
-.arrow-down {
+.gentle-square {
+  width: 35px;
+  height: 35px;
+  background: #18CDCA;
+}
+
+.divine-circle {
+  background: #4F80E1;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%; 
+}
+
+.evil-triangle {
   width: 0px;
   height: 0px;
   border-style: solid;
   border-width: 35px 17.5px 0 17.5px;
-  border-color: #FA5858 transparent transparent transparent;
+  border-color: #FF5349 transparent transparent transparent;
   border-style: inset;
   -webkit-transform:rotate(360deg);
 }
@@ -70,7 +81,32 @@ body {
 
 #intro {
   position: absolute;
+  width: 50%;
   top:10px;
   left:10px;
-  font-size: 32px;
+  font-size: 16px;
+}
+
+table#instructions td {
+  width: 33%;
+  padding: 10px;
+  text-align: center;
+  vertical-align: top;
+}
+
+table#instructions td div {
+  display: inline-block;
+  margin: 0 0 15px 0;
+}
+
+.enter {
+  padding: 2px 5px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  font-family: Courier;
+  color: #2e2e2e;
+  font-size: 16px;
+  font-weight: normal;
+  border-radius: 4px;
+  margin: 0 5px;
 }

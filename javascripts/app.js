@@ -46,10 +46,6 @@ ShooterView = Backbone.View.extend({
     detectCollision: function (shooter) {
         var self = this;
         self.collisionInterval = setInterval(function () {
-            var shooter_width = shooter.$el.width();
-            var shooter_height = shooter.$el.height();
-            var shooter_left = shooter.$el.offset().left;
-            var shooter_top = shooter.$el.offset().top;
 
             game.shapeinvaderscollection.views.forEach(function (shape_invader) {
 
@@ -57,12 +53,19 @@ ShooterView = Backbone.View.extend({
                     return false;
                 } else {
 
+                    var shooter_width = shooter.$el.width();
+                    var shooter_height = shooter.$el.height();
+                    var shooter_left = shooter.$el.offset().left;
+                    var shooter_top = shooter.$el.offset().top;
                     var shape_invader_left = shape_invader.$el.offset().left
                     var shape_invader_top = shape_invader.$el.offset().top
+                    var shape_invader_height = shape_invader.$el.data().height;
+                    var shape_invader_width = shape_invader.$el.width();
 
-                    if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_top >= shooter_top)) {
+                    if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_height + shape_invader_top >= shooter_top)) {
 
                         if (shape_invader.model.attributes.divine === true) {
+                            shape_invader.$el.remove();
                             game.shooterview.flash("#FFC600");
                             game.clearBoard();
                             return false;
@@ -72,6 +75,7 @@ ShooterView = Backbone.View.extend({
                             game.gameOver();
                             return false;
                         } else {
+                            shape_invader.$el.remove();
                             game.shooterview.flash("#4F80E1");
                         }
 
@@ -126,15 +130,15 @@ ShapeInvaderView = Backbone.View.extend({
 
         switch (num) {
             case 0:
-                self.$el.addClass("evil-triangle");
+                self.$el.addClass("evil-triangle").data({"height": 35});
                 self.model.attributes.good = false;
                 break;
             case 1:
-                self.$el.addClass("gentle-square");
+                self.$el.addClass("gentle-square").data({"height": 35});
                 self.model.attributes.good = true;
                 break;
             case 2:
-                self.$el.addClass("divine-circle");
+                self.$el.addClass("divine-circle").data({"height": 35});
                 self.model.attributes.divine = true;
                 break;
             default:

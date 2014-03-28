@@ -126,3 +126,11 @@ table#instructions td p {
   background: #000;
   height: 100px;
 }
+
+.finish-line {
+  background: #FF5F0D;
+  height: 4px;
+  position: absolute;
+  top: 40%;
+  width: 100%;
+}

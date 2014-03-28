@@ -69,7 +69,7 @@ ShooterView = Backbone.View.extend({
                         } else if (shape_invader.model.attributes.good === false) {
                             game.shapeinvaderscollection.reset();
                             game.inProgress = false;
-                            game.shooterview.gameOver();
+                            game.gameOver();
                             return false;
                         } else {
                             game.shooterview.flash("#4F80E1");
@@ -80,18 +80,6 @@ ShooterView = Backbone.View.extend({
 
             })
         }, 60)
-    },
-
-    gameOver: function () {
-        game.shooterview.$el.hide("explode", {
-            pieces: "36"
-        }, 500, function () {
-            game.clearBoard();
-            clearInterval(game.shooterview.collisionInterval);
-            clearInterval(game.shooterview.growInterval);
-            clearInterval(game.startGame);
-            $intro.show();
-        })
     },
 
     className: "shooter_div",
@@ -181,6 +169,23 @@ ShapeInvadersCollection = Backbone.Collection.extend({
     }
 })
 
+FinishLine = Backbone.View.extend({
+    initialize: function () {
+        this.render();
+    },
+
+    render: function () {
+        var template = _.template($("#finish_line").html());
+        this.$el.html(template);
+        $("body").append(this.$el);
+    },
+
+    kill: function () {
+        this.unbind();
+        this.remove();
+    }
+})
+
 var game = {
 
     initialize: function () {
@@ -189,6 +194,7 @@ var game = {
         self.inProgress = true;
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
+        self.finishline = new FinishLine();
         self.time = 0;
 
         self.startGame = setInterval(function () {
@@ -212,9 +218,20 @@ var game = {
         game.shapeinvaderscollection.views.forEach(function (invader) {
             invader.$el.hide().remove();
         })
-    }
+    },
 
-    
+    gameOver: function () {
+        game.shooterview.$el.hide("explode", {
+            pieces: "36"
+        }, 500, function () {
+            game.clearBoard();
+            game.finishline.kill();
+            clearInterval(game.shooterview.collisionInterval);
+            clearInterval(game.shooterview.growInterval);
+            clearInterval(game.startGame);
+            $intro.show();
+        })
+    }
 
 }
 

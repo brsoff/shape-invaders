@@ -24,25 +24,10 @@ ShooterView = Backbone.View.extend({
     },
 
     shoot: function () {
-        $body.append("<div class='bullet'>");
-        $bullet = $(".bullet");
-        var shooter_left = this.$el.offset().left;
-        var shooter_top = this.$el.offset().top;
-        var half_shooter_width = (this.$el.width() / 2);
-
-        $bullet.css({
-            "left": shooter_left + half_shooter_width + "px",
-            "top": shooter_top + "px"
-        })
-        $bullet.animate({
-            "top": "-" + $container.height() + "px"
-        }, 1000, "linear", function () {
-            $(this).remove();
-        })
+        new Bullet();
     },
 
     flash: function (color) {
-
         if (color === "#4F80E1") {
              var current_width = game.shooterview.$el.width();
              game.shooterview.$el.css({
@@ -116,6 +101,50 @@ ShooterView = Backbone.View.extend({
         })
     }
 
+})
+
+BulletCollection = Backbone.Collection.extend({
+    initialize: function () {
+        this.views = [];
+    }
+})
+
+Bullet = Backbone.View.extend({
+    initialize: function () {
+        // this.detectCollision();
+        this.render();
+        game.bulletcollection.views.push(this);
+    },
+
+    className: "bullet",
+
+    // detectCollision: function () {
+    //     if (this.$el) {
+    //         setInterval(function () {
+
+    //         }, 60)
+    //     }
+    // },
+
+    render: function () {
+        var template = _.template($("#bullet_view").html());
+        this.$el.html(template);
+        $body.append(this.$el);
+
+        var shooter_left = game.shooterview.$el.offset().left;
+        var shooter_top = game.shooterview.$el.offset().top;
+        var half_shooter_width = (game.shooterview.$el.width() / 2);
+
+        this.$el.css({
+            "left": shooter_left + half_shooter_width + "px",
+            "top": shooter_top + "px"
+        })
+        this.$el.animate({
+            "top": "-" + $container.height() + "px"
+        }, 2000, "linear", function () {
+            $(this).remove();
+        })
+    }
 })
 
 ShapeInvader = Backbone.Model.extend({
@@ -222,6 +251,7 @@ var game = {
         self.inProgress = true;
         self.shooterview = new ShooterView();
         self.shapeinvaderscollection = new ShapeInvadersCollection();
+        self.bulletcollection = new BulletCollection();
         self.finishline = new FinishLine();
         self.time = 0;
 

@@ -131,6 +131,8 @@ table#instructions td p {
   background: #FF5F0D;
   height: 4px;
   position: absolute;
-  top: 40%;
+  top: 5%;
+  left: 0;
   width: 100%;
+  min-height: 0;
 }

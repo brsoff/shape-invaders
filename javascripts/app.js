@@ -172,12 +172,18 @@ ShapeInvadersCollection = Backbone.Collection.extend({
 FinishLine = Backbone.View.extend({
     initialize: function () {
         this.render();
+        this.win_position;
     },
+
+    className: "finish-line",
 
     render: function () {
         var template = _.template($("#finish_line").html());
         this.$el.html(template);
         $("body").append(this.$el);
+        this.win_position = this.$el.position();
+        console.log(this.$el)
+        console.log(this.win_position)
     },
 
     kill: function () {

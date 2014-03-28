@@ -23,6 +23,24 @@ ShooterView = Backbone.View.extend({
         }, 10)
     },
 
+    shoot: function () {
+        $body.append("<div class='bullet'>");
+        $bullet = $(".bullet");
+        var shooter_left = this.$el.offset().left;
+        var shooter_top = this.$el.offset().top;
+        var half_shooter_width = (this.$el.width() / 2);
+
+        $bullet.css({
+            "left": shooter_left + half_shooter_width + "px",
+            "top": shooter_top + "px"
+        })
+        $bullet.animate({
+            "top": "-" + $container.height() + "px"
+        }, 1000, "linear", function () {
+            $(this).remove();
+        })
+    },
+
     flash: function (color) {
 
         if (color === "#4F80E1") {
@@ -247,6 +265,7 @@ var game = {
 
 $(function () {
 
+    $body = $("body");
     $container = $("#container");
     $intro = $("#intro");
     $time = $("#time");
@@ -263,6 +282,8 @@ $(function () {
                 game.shooterview.goLeft();
             } else if (e.keyCode === 39) {
                 game.shooterview.goRight();
+            } else if (e.keyCode === 38) {
+                game.shooterview.shoot();
             }
         }else{
             if (e.keyCode === 13) {

@@ -38,6 +38,7 @@ body {
   border-top-left-radius: 50%;
   position: absolute;
   bottom: 0;
+  overflow: visible;
 }
 
 #shooter_div_container {
@@ -135,4 +136,13 @@ table#instructions td p {
   left: 0;
   width: 100%;
   min-height: 0;
+}
+
+.bullet {
+  width: 5px;
+  height: 5px;
+  background: #000;
+  position: absolute;
+  left: 0;
+  top: 0;
 }

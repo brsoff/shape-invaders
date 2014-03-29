@@ -111,22 +111,72 @@ BulletCollection = Backbone.Collection.extend({
 
 Bullet = Backbone.View.extend({
     initialize: function () {
-        // this.detectCollision();
+        var self = this;
+        this.matches = [];
+        this.listenCollision = setInterval(function () {
+            self.detectMatch();
+        }, 60)
         this.render();
         game.bulletcollection.views.push(this);
     },
 
     className: "bullet",
 
-    // detectCollision: function () {
-    //     if (this.$el) {
-    //         setInterval(function () {
+    detectMatch: function () {
+        var self = this;
+        var bullet_left = this.$el.offset().left; // always the same
+        var bullet_width = this.$el.width();
 
-    //         }, 60)
-    //     }
-    // },
+        self.matches = $.grep(game.shapeinvaderscollection.views, function (e) {
+        var bullet_top = self.$el.offset().top;
+        var shape_invader_left = e.$el.offset().left;
+        var shape_invader_width = e.$el.width();
+        return ( (Math.abs(shape_invader_left - bullet_left) <= bullet_width ) )
+        })
+
+        if (self.matches.length > 0) {
+            console.log("matches")
+            clearInterval(self.listenCollision);
+            self.collisionInterval = setInterval(function () {
+                self.detectCollision();
+            }, 60)
+        }
+    },
+
+    detectCollision: function () {
+        var self = this;
+        self.matches.forEach(function (shape_invader) {
+            var bullet_top = self.$el.offset().top;
+            var shape_invader_left = shape_invader.$el.offset().left
+            var shape_invader_top = shape_invader.$el.offset().top
+            var shape_invader_height = shape_invader.$el.data().height;
+            var shape_invader_width = shape_invader.$el.width();
+
+            if ( (shape_invader_height + shape_invader_top >= bullet_top) ) {
+                clearInterval(self.collisionInterval);
+                shape_invader.$el.remove();
+            }
+
+        })
+
+        // game.shapeinvaderscollection.views.forEach(function (shape_invader) {
+        //     console.log("running")
+        //     var bullet_top = self.$el.offset().top;
+        //     var shape_invader_left = shape_invader.$el.offset().left
+        //     var shape_invader_top = shape_invader.$el.offset().top
+        //     var shape_invader_height = shape_invader.$el.data().height;
+        //     var shape_invader_width = shape_invader.$el.width();
+
+        //     if ((Math.abs(shape_invader_left - bullet_left) <= bullet_width) && (shape_invader_height + shape_invader_top >= bullet_top)) {
+        //         console.log("match?")
+        //         shape_invader.$el.remove();
+        //     }
+
+        // })
+    },
 
     render: function () {
+        var self = this;
         var template = _.template($("#bullet_view").html());
         this.$el.html(template);
         $body.append(this.$el);
@@ -141,8 +191,9 @@ Bullet = Backbone.View.extend({
         })
         this.$el.animate({
             "top": "-" + $container.height() + "px"
-        }, 2000, "linear", function () {
+        }, 1000, "linear", function () {
             $(this).remove();
+            clearInterval(self.listenCollision);
         })
     }
 })
@@ -172,7 +223,7 @@ ShapeInvaderView = Backbone.View.extend({
             "left": randomLeft
         });
 
-        var dumb_array = [0, 0, 0, 0, 0, 1, 1, 1, 2];
+        var dumb_array = [0, 0, 0, 1, 1, 2];
         var num = _.shuffle(dumb_array)[0]
 
         switch (num) {
@@ -233,8 +284,6 @@ FinishLine = Backbone.View.extend({
         this.$el.html(template);
         $("body").append(this.$el);
         this.win_position = this.$el.position();
-        console.log(this.$el)
-        console.log(this.win_position)
     },
 
     kill: function () {

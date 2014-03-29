@@ -154,25 +154,11 @@ Bullet = Backbone.View.extend({
 
             if ( (shape_invader_height + shape_invader_top >= bullet_top) ) {
                 clearInterval(self.collisionInterval);
-                shape_invader.$el.remove();
+                shape_invader.$el.stop().hide("explode", {pieces: "25"}, 200)
+                self.$el.remove();
             }
-
         })
 
-        // game.shapeinvaderscollection.views.forEach(function (shape_invader) {
-        //     console.log("running")
-        //     var bullet_top = self.$el.offset().top;
-        //     var shape_invader_left = shape_invader.$el.offset().left
-        //     var shape_invader_top = shape_invader.$el.offset().top
-        //     var shape_invader_height = shape_invader.$el.data().height;
-        //     var shape_invader_width = shape_invader.$el.width();
-
-        //     if ((Math.abs(shape_invader_left - bullet_left) <= bullet_width) && (shape_invader_height + shape_invader_top >= bullet_top)) {
-        //         console.log("match?")
-        //         shape_invader.$el.remove();
-        //     }
-
-        // })
     },
 
     render: function () {

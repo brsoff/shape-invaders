@@ -168,7 +168,7 @@ Bullet = Backbone.View.extend({
 
             if ( (shape_invader_height + shape_invader_top >= bullet_top) ) {
                 clearInterval(self.collisionInterval);
-                shape_invader.$el.stop().hide("explode", {pieces: "25"}, 200)
+                shape_invader.$el.stop().hide("explode", {pieces: "25"}, 100)
                 self.$el.remove();
             }
         })

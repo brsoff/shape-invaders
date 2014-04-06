@@ -139,8 +139,8 @@ table#instructions td p {
 }
 
 .bullet {
-  width: 20px;
-  height: 20px;
+  width: 5px;
+  height: 5px;
   background: #000;
   position: absolute;
   left: 0;

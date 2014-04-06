@@ -62,8 +62,8 @@ ShooterView = Backbone.View.extend({
                     var shooter_top = shooter.$el.offset().top;
                     var shape_invader_left = shape_invader.$el.offset().left
                     var shape_invader_top = shape_invader.$el.offset().top
-                    var shape_invader_height = shape_invader.$el.data().height;
-                    var shape_invader_width = shape_invader.$el.width();
+                    var shape_invader_height = shape_invader.model.attributes.height;
+                    var shape_invader_width = shape_invader.model.attributes.width;
 
                     if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_height + shape_invader_top >= shooter_top)) {
 
@@ -130,8 +130,22 @@ Bullet = Backbone.View.extend({
         self.matches = $.grep(game.shapeinvaderscollection.views, function (e) {
         var bullet_top = self.$el.offset().top;
         var shape_invader_left = e.$el.offset().left;
-        var shape_invader_width = e.$el.width();
-        return ( (Math.abs(shape_invader_left - bullet_left) <= bullet_width ) )
+        var shape_invader_width = e.model.attributes.width;
+
+        if (bullet_left === shape_invader_left) {
+            var same_left = true;
+            console.log("same")
+        }else if (bullet_left < shape_invader_left) {
+            var bullet_left_min = true;
+            var collision = ( bullet_left + bullet_width >= shape_invader_left );
+        }else{
+            var shape_invader_left_min = true;
+            var collision = ( shape_invader_left + shape_invader_width >= bullet_left );
+        }
+        
+        return ( ( same_left === true ) || ( collision === true ) )
+
+        // return ( (Math.abs(shape_invader_left - bullet_left) <= bullet_width ) && (Math.abs(shape_invader_left - bullet_left) <= shape_invader_width )  )
         })
 
         if (self.matches.length > 0) {
@@ -149,8 +163,8 @@ Bullet = Backbone.View.extend({
             var bullet_top = self.$el.offset().top;
             var shape_invader_left = shape_invader.$el.offset().left
             var shape_invader_top = shape_invader.$el.offset().top
-            var shape_invader_height = shape_invader.$el.data().height;
-            var shape_invader_width = shape_invader.$el.width();
+            var shape_invader_height = shape_invader.model.attributes.height;
+            var shape_invader_width = shape_invader.model.attributes.width;
 
             if ( (shape_invader_height + shape_invader_top >= bullet_top) ) {
                 clearInterval(self.collisionInterval);
@@ -186,6 +200,11 @@ Bullet = Backbone.View.extend({
 
 ShapeInvader = Backbone.Model.extend({
 
+    defaults: {
+        width: 35,
+        height: 35
+    }
+
 })
 
 ShapeInvaderView = Backbone.View.extend({
@@ -214,15 +233,15 @@ ShapeInvaderView = Backbone.View.extend({
 
         switch (num) {
             case 0:
-                self.$el.addClass("evil-triangle").data({"height": 35});
+                self.$el.addClass("evil-triangle")
                 self.model.attributes.good = false;
                 break;
             case 1:
-                self.$el.addClass("gentle-square").data({"height": 35});
+                self.$el.addClass("gentle-square")
                 self.model.attributes.good = true;
                 break;
             case 2:
-                self.$el.addClass("divine-circle").data({"height": 35});
+                self.$el.addClass("divine-circle")
                 self.model.attributes.divine = true;
                 break;
             default:

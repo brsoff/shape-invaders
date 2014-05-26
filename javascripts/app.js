@@ -1,3 +1,9 @@
+Shooter = Backbone.Model.extend({
+    initialize: function () {
+        this.bullets = 0;
+    }
+});
+
 ShooterView = Backbone.View.extend({
 
     initialize: function () {
@@ -24,7 +30,13 @@ ShooterView = Backbone.View.extend({
     },
 
     shoot: function () {
-        new Bullet();
+        if ( game.shooter.bullets > 0) {
+            game.shooter.bullets -= 1;
+            $('.bullets').text("Bullets: " + game.shooter.bullets);
+            new Bullet();
+        } else {
+            console.log("no bullets");
+        }
     },
 
     flash: function (color) {
@@ -36,7 +48,7 @@ ShooterView = Backbone.View.extend({
             })
         }else{
             game.shooterview.$el.css({
-               "background": color 
+               "background": color
             })
         }
         setTimeout(function () {
@@ -67,7 +79,7 @@ ShooterView = Backbone.View.extend({
 
                     if ((Math.abs(shape_invader_left - shooter_left) <= shooter_width) && (shape_invader_height + shape_invader_top >= shooter_top)) {
 
-                        if (shape_invader.model.attributes.divine === true) {
+                        if (shape_invader.model.attributes.circle === true) {
                             shape_invader.$el.remove();
                             game.shooterview.flash("#FFC600");
                             game.clearBoard();
@@ -79,6 +91,8 @@ ShooterView = Backbone.View.extend({
                             return false;
                         } else {
                             shape_invader.$el.remove();
+                            game.shooter.bullets += 1;
+                            $(".bullets").text("Bullets: " + game.shooter.bullets);
                             game.shooterview.flash("#4F80E1");
                         }
 
@@ -142,10 +156,9 @@ Bullet = Backbone.View.extend({
             var shape_invader_left_min = true;
             var collision = ( shape_invader_left + shape_invader_width >= bullet_left );
         }
-        
+
         return ( ( same_left === true ) || ( collision === true ) )
 
-        // return ( (Math.abs(shape_invader_left - bullet_left) <= bullet_width ) && (Math.abs(shape_invader_left - bullet_left) <= shape_invader_width )  )
         })
 
         if (self.matches.length > 0) {
@@ -237,12 +250,12 @@ ShapeInvaderView = Backbone.View.extend({
                 self.model.attributes.good = false;
                 break;
             case 1:
-                self.$el.addClass("gentle-square")
+                self.$el.addClass("square")
                 self.model.attributes.good = true;
                 break;
             case 2:
-                self.$el.addClass("divine-circle")
-                self.model.attributes.divine = true;
+                self.$el.addClass("circle")
+                self.model.attributes.circle = true;
                 break;
             default:
             console.log("??");
@@ -295,7 +308,7 @@ FinishLine = Backbone.View.extend({
         this.unbind();
         this.remove();
     }
-})
+});
 
 var game = {
 
@@ -303,11 +316,15 @@ var game = {
         $container.animate({"height":"99%"});
         var self = this;
         self.inProgress = true;
-        self.shooterview = new ShooterView();
+        self.shooter = new Shooter();
+        self.shooterview = new ShooterView({model: self.shooter});
         self.shapeinvaderscollection = new ShapeInvadersCollection();
         self.bulletcollection = new BulletCollection();
         self.finishline = new FinishLine();
         self.time = 0;
+
+        $('.bullets').text("Bullets: " + game.shooter.bullets);
+        $('.time').text("Time: 0");
 
         self.startGame = setInterval(function () {
             for (var i = 1; i <= (self.time / 2); i++) {
@@ -317,7 +334,7 @@ var game = {
                 })
                 self.shapeinvaderscollection.add(shapeinvader);
             }
-            $time.text(self.time += 1);
+            $(".time").text("Time: " + (self.time += 1));
             var container_height = $container.height()
             container_height -= 5;
             $container.css({"height": container_height+"px"});
@@ -352,7 +369,6 @@ $(function () {
     $body = $("body");
     $container = $("#container");
     $intro = $("#intro");
-    $time = $("#time");
     $shooter_div_container = $("#shooter_div_container");
     $shooter_div = $(".shooter_div");
     $shape_invaders_container = $("#shape_invaders_container");

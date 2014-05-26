@@ -20,14 +20,17 @@ body {
   overflow: hidden;
 }
 
-#time {
+#scoreboard {
+  background-color: #f7f7f7;
   position: absolute;
   top: 0;
   right: 0;
-  font-size: 32px;
+  font-size: 20px;
+  line-height: 28px;
   color: #000;
   padding: 5px;
   font-weight: bold;
+  z-index: 9999;
 }
 
 .shooter_div {
@@ -53,17 +56,17 @@ body {
   opacity: .9;
 }
 
-.gentle-square {
+.square {
   width: 35px;
   height: 35px;
   background: #4F80E1;
 }
 
-.divine-circle {
+.circle {
   background: #FFC600;
   width: 35px;
   height: 35px;
-  border-radius: 50%; 
+  border-radius: 50%;
 }
 
 .evil-triangle {
@@ -132,7 +135,7 @@ table#instructions td p {
   background: #FF5F0D;
   height: 4px;
   position: absolute;
-  top: 5%;
+  top: 10%;
   left: 0;
   width: 100%;
   min-height: 0;

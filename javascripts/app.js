@@ -334,10 +334,19 @@ var game = {
                 })
                 self.shapeinvaderscollection.add(shapeinvader);
             }
+
+            console.log("shooter offset: " + game.shooterview.$el.offset().top );
+            console.log("finish line offset: " + $('.finish-line').offset().top );
+
+            if ( game.shooterview.$el.offset().top <= $('.finish-line').offset().top ) {
+                game.gameOver();
+            }
+
             $(".time").text("Time: " + (self.time += 1));
             var container_height = $container.height()
             container_height -= 5;
             $container.css({"height": container_height+"px"});
+
 
         }, 1000)
 
